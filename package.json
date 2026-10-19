@@ -1,0 +1,8 @@
+{
+  "name": "formora",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Formora browser demo by Tolbert Innovation Hub",
+  "scripts": { "test": "node --test tests/model.test.js", "start": "python3 -m http.server 3000", "dev": "node dev-server.mjs" }
+}
