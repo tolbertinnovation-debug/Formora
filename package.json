@@ -1,8 +1,23 @@
 {
   "name": "formora",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "type": "module",
-  "description": "Formora browser demo by Tolbert Innovation Hub",
-  "scripts": { "test": "node --test tests/model.test.js", "start": "python3 -m http.server 3000", "dev": "node dev-server.mjs" }
+  "description": "Formora forms and shared workspaces by Tolbert Innovation Hub",
+  "scripts": {
+    "test": "node --experimental-test-module-mocks --test tests/*.test.js",
+    "dev": "node --env-file-if-exists=.env.local dev-server.mjs",
+    "start": "npm run dev",
+    "build": "vite build",
+    "migrate": "node --env-file-if-exists=.env.local scripts/migrate.mjs"
+  },
+  "dependencies": {
+    "@neondatabase/auth": "0.6.0-beta",
+    "@vercel/functions": "3.10.1",
+    "jose": "6.2.12",
+    "pg": "8.16.3"
+  },
+  "devDependencies": {
+    "vite": "8.3.4"
+  }
 }

@@ -1,16 +1,16 @@
-// Local development server; use a managed static host for public deployment.
 import { createServer } from 'node:http';
-import { readFile } from 'node:fs/promises';
-import { resolve, extname } from 'node:path';
-const root=process.cwd(), args=process.argv.slice(2);
-const port=Number(args[args.indexOf('--port')+1])||4173;
-const mime={'.html':'text/html','.js':'text/javascript','.css':'text/css','.svg':'image/svg+xml','.json':'application/json','.md':'text/plain'};
-createServer(async(req,res)=>{
-  try {
-    const path=decodeURIComponent(new URL(req.url,'http://localhost').pathname);
-    const file=resolve(root,'.'+(path==='/'?'/index.html':path));
-    if(!file.startsWith(root+'/')||path.split('/').some(part=>part.startsWith('.'))){res.writeHead(403);res.end('Forbidden');return;}
-    const data=await readFile(file);
-    res.writeHead(200,{'Content-Type':(mime[extname(file)]||'application/octet-stream')+'; charset=utf-8','Cache-Control':'no-store','X-Content-Type-Options':'nosniff'});res.end(data);
-  }catch{res.writeHead(404);res.end('Not found');}
-}).listen(port,'0.0.0.0',()=>console.log(`Formora preview on port ${port}`));
+import { createServer as createViteServer } from 'vite';
+import forms from './api/forms.js';
+import responses from './api/responses.js';
+import publicForm from './api/public.js';
+import auth from './api/auth/[...path].js';
+const args=process.argv.slice(2),port=Number(args[args.indexOf('--port')+1])||4173;
+const vite=await createViteServer({server:{middlewareMode:true,allowedHosts:['terminal.local','localhost']},appType:'spa'});
+const server=createServer(async(req,res)=>{
+  const path=new URL(req.url,'http://localhost').pathname;
+  const handler=path.startsWith('/api/auth/')?auth:({'/api/forms':forms,'/api/responses':responses,'/api/public':publicForm})[path];
+  if(!handler){vite.middlewares(req,res);return;}
+  res.status=code=>{res.statusCode=code;return res;};res.json=value=>{res.setHeader('Content-Type','application/json');res.end(JSON.stringify(value));};res.send=value=>res.end(value);
+  let raw='';try{for await(const chunk of req){raw+=chunk;if(Buffer.byteLength(raw)>110000){res.status(413).json({error:'Request is too large.'});return;}}req.body=raw||undefined;await handler(req,res);}catch{res.status(500).json({error:'Development service unavailable.'});}
+});
+server.listen(port,'0.0.0.0',()=>console.log(`Formora preview on port ${port}`));

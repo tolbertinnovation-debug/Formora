@@ -8,7 +8,7 @@ Help schools, training providers, NGOs and small businesses create forms and man
 
 Homepage, templates, editing, local test submissions, response management and exports. No live accounts or payments.
 
-## Milestone 2 — Shared registration pilot
+## Milestone 2 — Shared registration pilot (implementation branch; deployment pending)
 
 - Choose hosting, database and identity providers with the founder.
 - Add account creation, verified sign-in, password recovery and organization ownership.
@@ -36,3 +36,5 @@ AI-assisted draft forms with creator review, developer integrations, advanced wo
 ## Pilot measures
 
 Track first-form publishing, applicant completion, repeat institutional use, support needs, reliability, and willingness to pay. Establish baseline results before setting growth targets.
+
+Current status: managed authentication and isolated development database provisioned; account UI, server handlers, publishing and public submissions implemented in the cloud-workspaces branch. Vercel credentials and end-to-end verification remain pending.
